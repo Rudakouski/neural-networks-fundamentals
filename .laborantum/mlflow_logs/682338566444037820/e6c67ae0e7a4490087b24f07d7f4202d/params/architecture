@@ -1,0 +1,1 @@
+net.0: Linear(784, 784) | net.1: ReLU | net.2: Linear(784, 10)

@@ -1,0 +1,14 @@
+artifact_uri: file:///workspaces/neural-networks-fundamentals/.laborantum/mlflow_logs/682338566444037820/21f8e264cd354d72879d087b49b416d2/artifacts
+end_time: 1783208375946
+entry_point_name: ''
+experiment_id: '682338566444037820'
+lifecycle_stage: active
+run_id: 21f8e264cd354d72879d087b49b416d2
+run_name: simple_network_training
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1783208365480
+status: 3
+tags: []
+user_id: root

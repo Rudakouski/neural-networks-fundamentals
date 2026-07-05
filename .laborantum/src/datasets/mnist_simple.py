@@ -1,23 +1,23 @@
+import os
+import torch
+import numpy as np
 import torchvision.datasets
 
 class MNISTSimpleDataset:
     def __init__(self, train=True):
-        ...
-        ## Load MNIST dataset here
-        ## YOUR CODE HERE
-
+        root = os.path.expanduser('~/')
+        dataset = torchvision.datasets.MNIST(root=root, train=train, download=True)
+        self.X = np.array([np.array(dataset[i][0]) for i in range(len(dataset))], dtype=np.uint8)
+        self.y = np.array([dataset[i][1] for i in range(len(dataset))], dtype=np.int64)
 
     def __len__(self):
-        res = 0
-        ## Return number of items that is there in the dataset
-        ## YOUR CODE HERE
-        return res
-
+        return len(self.X)
 
     def __getitem__(self, index):
-        sample = {}
-
-        ## Return a sample of the dataset that corresponds to the input index
-        ## YOUR CODE HERE
-        
-        return sample 
+        image = self.X[index].astype(np.float32)
+        image = (image / 127.5) - 1.0
+        label = self.y[index]
+        return {
+            'image': torch.from_numpy(image),
+            'label': torch.tensor(label, dtype=torch.long)
+        }

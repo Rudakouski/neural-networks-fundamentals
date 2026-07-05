@@ -1,4 +1,5 @@
 from html import escape
+import torch.nn as nn
 
 import torch
 from tqdm.auto import tqdm
@@ -136,15 +137,18 @@ def _empty_loss_totals(losses):
 
 def _compute_losses(losses, batch):
     return {
-        ## YOUR CODE HERE
+        loss_name: loss_fn(batch)
+        for loss_name, loss_fn in losses.items()
     }
 
 
 def _sum_losses(batch_losses):
     total_loss = None
     for loss_value in batch_losses.values():
-        ...
-        ## YOUR CODE HERE
+        if total_loss is None:
+            total_loss = loss_value
+        else:
+            total_loss = total_loss + loss_value
     return total_loss
 
 
@@ -174,8 +178,9 @@ def _update_metric_totals(metric_totals, metrics, batch):
     
     
     for metric_name, metric_fn in metrics.items():
-        ...
-        ## YOUR CODE HERE
+        enumerator, denominator = metric_fn(batch)
+        metric_totals[metric_name]['enumerator'] += _number(enumerator)
+        metric_totals[metric_name]['denominator'] += _number(denominator)
 
 
 def _finalize_metric_totals(metric_totals):
@@ -247,6 +252,15 @@ def train_model(
 
                 for batch_index, batch in enumerate(train_dl):
                     batch = {'data': batch}
+                    model.train()
+                    optimizer.zero_grad()
+                    model(batch)
+                    loss_values = _compute_losses(losses, batch)
+                    total_loss = _sum_losses(loss_values)
+                    total_loss.backward()
+                    optimizer.step()
+                    _update_metric_totals(train_metrics, metrics, batch)
+
 
                     ## YOUR CODE HERE
                     # Implement one training step:
@@ -280,6 +294,10 @@ def train_model(
                 with torch.no_grad():
                     for valid_batch in valid_dl:
                         valid_batch = {'data': valid_batch}
+                        model.eval()
+                        model(valid_batch)
+                        valid_loss_values = _compute_losses(losses, valid_batch)
+                        _update_metric_totals(valid_metrics, metrics, valid_batch)
 
                         ## YOUR CODE HERE
                         # Implement one validation step:
